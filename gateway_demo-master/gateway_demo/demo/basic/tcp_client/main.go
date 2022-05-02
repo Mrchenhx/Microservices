@@ -17,14 +17,14 @@ func main() {
 	// 模拟发起请求
 	doSend()
 	fmt.Println("doSend over")
-	doSend()
-	fmt.Println("doSend over")
+	//doSend()
+	//fmt.Println("doSend over")
 }
 
 func doSend() {
 	// 1. 连接服务器
 	conn, err := net.Dial("tcp", "localhost:9090")
-	defer conn.Close() // 如果此处不写，
+	defer conn.Close() // 不执行close，则程序一直在执行，端口号一直被占用，处于 Established
 	if err != nil {
 		fmt.Printf("connect failed, err: %v\n", err)
 		return
@@ -50,5 +50,6 @@ func doSend() {
 			break
 		}
 	}
-
+	//fmt.Println("client is close")
+	//time.Sleep(100 * time.Second)
 }

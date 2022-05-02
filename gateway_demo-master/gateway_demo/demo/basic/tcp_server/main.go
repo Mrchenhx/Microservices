@@ -26,20 +26,22 @@ func main() {
 			continue // 监听下一个连接
 		}
 		//3. 创建处理协程
-		go func(conn net.Conn) {
-			//defer conn.Close() // 不关闭会出现 close_wait 状态
-			for {
-				var buf [128]byte
-				n, err := conn.Read(buf[:])
-				if err != nil {
-					fmt.Printf("read from connect failed, err: %v\n", err)
-					// 客户端主动关闭，若没有 conn.Close() 则会出现 close_wait，
-					// 客户端则出现 Fin_wait
-					break
-				}
-				str := string(buf[:n])
-				fmt.Printf("receive from client, data: %v\n", str)
-			}
-		}(conn)
+		go process(conn)
+	}
+}
+
+func process(conn net.Conn){
+	//defer conn.Close() // 不关闭会出现 close_wait 状态
+	for {
+		var buf [128]byte
+		n, err := conn.Read(buf[:])
+		if err != nil {
+			fmt.Printf("read from connect failed, err: %v\n", err)
+			// 客户端主动关闭，若没有 conn.Close() 则服务器会出现 close_wait，
+			// 客户端则出现 Fin_wait
+			break
+		}
+		str := string(buf[:n])
+		fmt.Printf("receive from client, data: %v\n", str)
 	}
 }
